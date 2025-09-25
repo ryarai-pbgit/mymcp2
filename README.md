@@ -585,6 +585,5 @@ Claudeが無料枠限界に達したので、VSCodeでMCPサーバを登録し�
 	"inputs": []
 }
 ```
-上記のoutput.mdをcopilotに与え、あとはプロンプトの調整ですが、色々やって下記のようなパワポができました。
-
-![](image/output_slide.pptx "")
+上記のoutput.mdをcopilotに与え、あとはプロンプトの調整ですが、色々やって下記のようなパワポができました。<br>
+[試作のパワポ](image/output_slide.pptx)

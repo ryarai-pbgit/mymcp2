@@ -463,3 +463,49 @@ ALTER ACCOUNT SET CORTEX_ENABLED_CROSS_REGION = 'AWS_US';
 ![](image/agentchat8.png "")
 ![](image/agentchat9.png "")
 ![](image/agentchat10.png "")
+
+## 3. LiteLLM、Snowflake-LabsのMCPサーバに合流
+tools_config.yamlを下記のように修正してMCPサーバを起動。
+```
+agent_services: # List all Cortex Agent services
+  - service_name: "MYAGENT"
+    description: > # Describe contents of the agent service"
+      "顧客の属性データ、取引データ、延滞実績データを参照、分析するためのエージェントです。"
+    database_name: "TESTDB"
+    schema_name: "PUBLIC"
+
+search_services: # List all Cortex Search services
+
+analyst_services: # List all Cortex Analyst semantic models/views
+  - service_name: "MYMODEL" # Create descriptive name for the service
+    semantic_model: "MYVIEW" # Fully-qualify semantic YAML model or Semantic View
+    description: > # Describe contents of the analyst service"
+      "顧客の属性データ、取引データ、延滞実績データを管理するモデルです。"
+
+other_services: # Set desired tool groups to True to enable tools for that group
+  object_manager: True # Perform basic operations against Snowflake's most common objects such as creation, dropping, updating, and more.
+  query_manager: True # Run LLM-generated SQL managed by user-configured permissions.
+  semantic_manager: True # Discover and query Snowflake Semantic Views and their components.
+sql_statement_permissions: # List SQL statements to explicitly allow (True) or disallow (False).
+  # - All: True # To allow everything, uncomment and set All: True.
+  - Alter: False
+  - Command: False
+  - Comment: True
+  - Commit: False
+  - Create: False
+  - Delete: False
+  - Describe: True
+  - Drop: False
+  - Insert: False
+  - Merge: False
+  - Rollback: False
+  - Select: True
+  - Transaction: False
+  - TruncateTable: False
+  - Unknown: False # To allow unknown or unmapped statement types, set Unknown: True.
+  - Update: False
+  - Use: True
+```
+テストツールから呼び出せることを確認。
+![](image/litellm.png "")
+

@@ -1,0 +1,456 @@
+# MCP関連、色々
+
+## 1. Cortex分析
+Snowsight経由で、セマンティックモデルを下記のように作成。
+```
+name: MYMODEL
+description: このセマンティックモデルは、顧客の属性データとその取引データ、および、クレジットカードの延滞実績を管理しています。
+tables:
+  - name: CUSTOMER_DATA
+    synonyms:
+      - customer_info
+      - customer_details
+      - demographic_data
+      - user_data
+      - client_info
+      - personal_data
+      - customer_profile
+      - user_profile
+    description: 顧客の属性データを管理しています。居住地、利用デバイス、学歴、家族、性別、年収、趣味、仕事、ユーザIDを管理しています。
+    base_table:
+      database: TESTDB
+      schema: PUBLIC
+      table: CUSTOMER_DATA
+    dimensions:
+      - name: AGE
+        description: The age range of the customer.
+        expr: AGE
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 65+
+          - 35-44
+          - 25-34
+      - name: AREA
+        description: Customer's residential prefecture in Japan.
+        expr: AREA
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 東京都
+          - 徳島県
+          - 福井県
+      - name: DEVICE
+        description: The device type that the customer primarily uses to interact with the service, categorized as either smartphone-centric, PC-centric, or multi-device usage.
+        expr: DEVICE
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - スマホ中心
+          - PC中心
+          - マルチデバイス
+      - name: EDUCATION
+        description: The highest level of education completed by the customer.
+        expr: EDUCATION
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 大学院卒
+          - 大卒
+          - 専門学校卒
+      - name: FAMILY
+        description: Family status of the customer, indicating whether they are married, have children, or are single.
+        expr: FAMILY
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 既婚
+          - 子供あり
+          - 独身
+      - name: GENDER
+        description: The customer's gender, categorized as male, female, or other.
+        expr: GENDER
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 男性
+          - その他
+          - 女性
+      - name: INCOME
+        description: Annual household income range of the customer.
+        expr: INCOME
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 500-700万円
+          - 300-500万円
+          - 1000万円以上
+      - name: INTEREST
+        description: Hobbies or interests of the customer.
+        expr: INTEREST
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 読書
+          - ガーデニング
+          - 音楽
+      - name: JOB
+        description: Occupation of the customer.
+        expr: JOB
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 主婦
+          - 無職
+          - エンジニア
+      - name: USERID
+        description: Unique identifier for each customer in the system, used to track and manage individual customer interactions and data.
+        expr: USERID
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 41467f4d-fdf9-4aaf-b517-8918cff09436
+          - 48e85e3c-5156-4d74-96c9-104abeafccb7
+          - 09dc5552-1e6e-423a-8412-76769df15037
+    unique_keys:
+      - columns:
+          - USERID
+  - name: OVERDUE_TABLE
+    synonyms:
+      - overdue_items
+      - past_due_items
+      - late_returns
+      - borrowed_items_past_due
+      - expired_loans
+    description: This table stores information about library items that are past their due date, including the user who borrowed the item.
+    base_table:
+      database: TESTDB
+      schema: PUBLIC
+      table: OVERDUE_TABLE
+    dimensions:
+      - name: USERID
+        description: Unique identifier for the user who is associated with the overdue item.
+        expr: USERID
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 2f20b01d-90ef-43a6-a209-4735db8fa8e2
+          - 704ee493-8deb-4ddc-9272-2e34e0914594
+          - be8f622b-94e7-4de3-9cf8-1ba91380cb2a
+    unique_keys:
+      - columns:
+          - USERID
+  - name: TRANSACTION_DATA
+    synonyms:
+      - TRANSACTION_DATA
+      - FINANCIAL_TRANSACTIONS
+      - SALES_RECORDS
+      - PURCHASE_HISTORY
+      - TRANSACTION_LOG
+      - FINANCIAL_ACTIVITY
+      - USER_TRANSACTIONS
+      - TRANSACTION_HISTORY
+    description: This table stores records of financial transactions, including sales or purchases, with details about the user, date, category, and financial information, providing a comprehensive view of each transaction.
+    base_table:
+      database: TESTDB
+      schema: PUBLIC
+      table: TRANSACTION_DATA
+    dimensions:
+      - name: CATEGORY
+        description: The category of the transaction, indicating the type of product or service purchased, such as food and beverages, entertainment, or travel-related expenses.
+        expr: CATEGORY
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Food & Drink
+          - Entertainment
+          - Travel
+      - name: LOCATION
+        description: The location where the transaction took place, represented by the name of the Japanese prefecture.
+        expr: LOCATION
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 大分県
+          - 埼玉県
+          - 新潟県
+      - name: PAYMENT
+        description: The method used by the customer to make a payment, such as through a mobile device, with physical cash, or using a credit card.
+        expr: PAYMENT
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Mobile Payment
+          - Cash
+          - Credit Card
+      - name: USERID
+        description: Unique identifier for the user who initiated the transaction.
+        expr: USERID
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - e950d60f-044c-48c7-94df-25e64f0bcc94
+          - 5bd33bf2-646b-4fcf-ab74-d831a9acfd6a
+          - 41467f4d-fdf9-4aaf-b517-8918cff09436
+    time_dimensions:
+      - name: DATE
+        description: Date of the transaction.
+        expr: DATE
+        data_type: DATE
+        sample_values:
+          - '2024-05-03'
+          - '2024-06-01'
+          - '2024-01-27'
+    facts:
+      - name: AMOUNT
+        description: The amount of the transaction, representing the total value exchanged or paid in a single transaction, measured in the currency of the transaction.
+        expr: AMOUNT
+        data_type: NUMBER(38,13)
+        sample_values:
+          - '317.6000000000000'
+          - '219.5200000000000'
+          - '4012.7900000000000'
+      - name: QUANTITY
+        description: The quantity of items involved in the transaction.
+        expr: QUANTITY
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '1'
+      - name: UNIT
+        description: The UNIT column represents the quantity or volume of a transaction, likely measured in a specific unit of measurement such as tons, pounds, or units, indicating the amount of goods or products involved in each transaction.
+        expr: UNIT
+        data_type: NUMBER(38,13)
+        sample_values:
+          - '1527.6600000000000'
+          - '155.3800000000000'
+          - '1229.6500000000000'
+relationships:
+  - left_table: TRANSACTION_DATA
+    relationship_columns:
+      - left_column: USERID
+        right_column: USERID
+    right_table: CUSTOMER_DATA
+    name: 顧客と取引
+  - name: 取引と延滞実績
+    left_table: CUSTOMER_DATA
+    relationship_columns:
+      - left_column: USERID
+        right_column: USERID
+    right_table: OVERDUE_TABLE
+```
+セマンティックビューは下記のように作成。
+```
+name: MYVIEW
+description: このセマンティックビューは、顧客の属性とその取引データ、および、クレジットカードの延滞実績を管理します。
+tables:
+  - name: CUSTOMER_DATA
+    synonyms:
+      - customer_info
+      - customer_details
+      - demographic_data
+      - user_data
+      - client_info
+      - personal_data
+      - customer_profile
+      - user_profile
+    description: The table contains demographic data about customers, providing insights into their personal characteristics, lifestyle, and interests, enabling analysis and understanding of customer behavior and preferences.
+    base_table:
+      database: TESTDB
+      schema: PUBLIC
+      table: CUSTOMER_DATA
+    dimensions:
+      - name: AGE
+        description: The age range of the customer.
+        expr: AGE
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 65+
+          - 35-44
+          - 25-34
+      - name: AREA
+        description: Customer's residential prefecture in Japan.
+        expr: AREA
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 東京都
+          - 徳島県
+          - 福井県
+      - name: DEVICE
+        description: The device type that the customer primarily uses to interact with the service, categorized as either smartphone-centric, PC-centric, or multi-device usage.
+        expr: DEVICE
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - スマホ中心
+          - PC中心
+          - マルチデバイス
+      - name: EDUCATION
+        description: The highest level of education completed by the customer.
+        expr: EDUCATION
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 大学院卒
+          - 大卒
+          - 専門学校卒
+      - name: FAMILY
+        description: Family status of the customer, indicating whether they are married, have children, or are single.
+        expr: FAMILY
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 既婚
+          - 子供あり
+          - 独身
+      - name: GENDER
+        description: The customer's gender, categorized as male, female, or other.
+        expr: GENDER
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 男性
+          - その他
+          - 女性
+      - name: INCOME
+        description: Annual household income range of the customer.
+        expr: INCOME
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 500-700万円
+          - 300-500万円
+          - 1000万円以上
+      - name: INTEREST
+        description: Hobbies or interests of the customer.
+        expr: INTEREST
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 読書
+          - ガーデニング
+          - 音楽
+      - name: JOB
+        description: Occupation of the customer.
+        expr: JOB
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 主婦
+          - 無職
+          - エンジニア
+      - name: USERID
+        description: Unique identifier for each customer in the system, used to track and manage individual customer interactions and data.
+        expr: USERID
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 41467f4d-fdf9-4aaf-b517-8918cff09436
+          - 48e85e3c-5156-4d74-96c9-104abeafccb7
+          - 09dc5552-1e6e-423a-8412-76769df15037
+    unique_keys:
+      - columns:
+          - USERID
+  - name: OVERDUE_TABLE
+    synonyms:
+      - overdue_items
+      - past_due_items
+      - late_returns
+      - borrowed_items_past_due
+      - expired_loans
+    description: This table stores information about library items that are past their due date, including the user who borrowed the item.
+    base_table:
+      database: TESTDB
+      schema: PUBLIC
+      table: OVERDUE_TABLE
+    dimensions:
+      - name: USERID
+        description: Unique identifier for the user who is associated with the overdue item.
+        expr: USERID
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 2f20b01d-90ef-43a6-a209-4735db8fa8e2
+          - 704ee493-8deb-4ddc-9272-2e34e0914594
+          - be8f622b-94e7-4de3-9cf8-1ba91380cb2a
+    unique_keys:
+      - columns:
+          - USERID
+  - name: TRANSACTION_DATA
+    synonyms:
+      - FINANCIAL_TRANSACTIONS
+      - SALES_RECORDS
+      - PURCHASE_HISTORY
+      - TRANSACTION_LOG
+      - FINANCIAL_ACTIVITY
+      - USER_TRANSACTIONS
+      - TRANSACTION_HISTORY
+    description: This table stores records of financial transactions, including sales or purchases, with details about the user, date, category, and financial information, providing a comprehensive view of each transaction.
+    base_table:
+      database: TESTDB
+      schema: PUBLIC
+      table: TRANSACTION_DATA
+    dimensions:
+      - name: CATEGORY
+        description: The category of the transaction, indicating the type of product or service purchased, such as food and beverages, entertainment, or travel-related expenses.
+        expr: CATEGORY
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Food & Drink
+          - Entertainment
+          - Travel
+      - name: LOCATION
+        description: The location where the transaction took place, represented by the name of the Japanese prefecture.
+        expr: LOCATION
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 大分県
+          - 埼玉県
+          - 新潟県
+      - name: PAYMENT
+        description: The method used by the customer to make a payment, such as through a mobile device, with physical cash, or using a credit card.
+        expr: PAYMENT
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Mobile Payment
+          - Cash
+          - Credit Card
+      - name: USERID
+        description: Unique identifier for the user who initiated the transaction.
+        expr: USERID
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - e950d60f-044c-48c7-94df-25e64f0bcc94
+          - 5bd33bf2-646b-4fcf-ab74-d831a9acfd6a
+          - 41467f4d-fdf9-4aaf-b517-8918cff09436
+    time_dimensions:
+      - name: DATE
+        description: Date of the transaction.
+        expr: DATE
+        data_type: DATE
+        sample_values:
+          - '2024-05-03'
+          - '2024-06-01'
+          - '2024-01-27'
+    facts:
+      - name: AMOUNT
+        description: The amount of the transaction, representing the total value exchanged or paid in a single transaction, measured in the currency of the transaction.
+        expr: AMOUNT
+        data_type: NUMBER(38,13)
+        sample_values:
+          - '317.6000000000000'
+          - '219.5200000000000'
+          - '4012.7900000000000'
+      - name: QUANTITY
+        description: The quantity of items involved in the transaction.
+        expr: QUANTITY
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '1'
+      - name: UNIT
+        description: The UNIT column represents the quantity or volume of a transaction, likely referring to the number of units of a product or service sold or exchanged.
+        expr: UNIT
+        data_type: NUMBER(38,13)
+        sample_values:
+          - '1527.6600000000000'
+          - '155.3800000000000'
+          - '1229.6500000000000'
+relationships:
+  - name: '"顧客属性と延滞実績"'
+    left_table: CUSTOMER_DATA
+    relationship_columns:
+      - left_column: USERID
+        right_column: USERID
+    right_table: OVERDUE_TABLE
+  - name: '"顧客属性と取引データ"'
+    left_table: TRANSACTION_DATA
+    relationship_columns:
+      - left_column: USERID
+        right_column: USERID
+    right_table: CUSTOMER_DATA
+```
+## ２. エージェント
+作ったセマンティックモデル/ビューをツール（mytool）として、agentを作成してchatしてみました。<br>
+なお、agentで利用するLLMが東京では使えなかったので、アメリカにクロスリージョン推論しています。<br>
+```
+ALTER ACCOUNT SET CORTEX_ENABLED_CROSS_REGION = 'AWS_US';
+```
+思考プロセスの中で、セマンティックモデル（=mytool）を使ってくれているのがわかります。
+![](image/agentchat1.png "")
+![](image/agentchat2.png "")
+

@@ -9,7 +9,7 @@ search_services: # List all Cortex Search services
 
 analyst_services: # List all Cortex Analyst semantic models/views
   - service_name: "MYMODEL" # Create descriptive name for the service
-    semantic_model: "MYVIEW" # Fully-qualify semantic YAML model or Semantic View
+    semantic_model: "TESTDB.PUBLIC.MYVIEW"
     description: > # Describe contents of the analyst service"
       "顧客の属性データ、取引データ、延滞実績データを管理するモデルです。"
 

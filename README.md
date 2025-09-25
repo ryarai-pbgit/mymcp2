@@ -478,7 +478,7 @@ search_services: # List all Cortex Search services
 
 analyst_services: # List all Cortex Analyst semantic models/views
   - service_name: "MYMODEL" # Create descriptive name for the service
-    semantic_model: "MYVIEW" # Fully-qualify semantic YAML model or Semantic View
+    semantic_model: "TESTDB.PUBLIC.MYVIEW" # Fully-qualify semantic YAML model or Semantic View
     description: > # Describe contents of the analyst service"
       "顧客の属性データ、取引データ、延滞実績データを管理するモデルです。"
 
@@ -508,4 +508,56 @@ sql_statement_permissions: # List SQL statements to explicitly allow (True) or d
 ```
 テストツールから呼び出せることを確認。
 ![](image/litellm.png "")
+
+外部からcurlで呼び出して確認。昨日の時点では回答できなかったJOINしないと答えられない質問にしてみる。<br>
+複数テーブルJOINしないと答えられない質問<br>
+```
+curl --location 'http://127.0.0.1:4000/v1/responses' \
+--header 'Content-Type: application/json' \
+--header "Authorization: Bearer sk-1234" \
+--data '{
+  "model": "gpt-4o-mini",
+  "tools": [
+    {
+      "type": "mcp",
+      "server_label": "snowflake",
+      "server_url": "litellm_proxy",
+      "require_approval": "never",
+      "allowed_tools": ["snowflake-cortex_analyst"],
+      "headers": {
+            "x-litellm-api-key": "Bearer sk-1234"
+        }
+    }
+  ],
+  "input": "結果はマークダウンで出力して：取引件数が上位１０位の顧客のID、居住地、延滞実績有無を教えて",
+  "tool_choice": "required"
+}'
+```
+結果
+```
+以下は、取引件数が上位10位の顧客のID、居住地、延滞実績の有無です。
+
+| 顧客ID                                   | 居住地     | 延滞実績 |
+|-----------------------------------------|-----------|--------|
+| 4c94eaa3-a627-4648-aabc-00797276a4fc  | 徳島県    | なし   |
+| f6cb8846-2385-4358-b131-2d628475a2a4  | 埼玉県    | なし   |
+| dab4e08d-c79d-4c60-8715-ffadf9f06183  | 山形県    | なし   |
+| 7670744a-72e0-4e10-aa2b-3b0cbe257744  | 香川県    | なし   |
+| 26576f0c-a886-4b44-be37-d0fa581b901c  | 神奈川県  | なし   |
+| 6025b38b-2426-4e68-a572-bc98ae1eb477  | 新潟県    | あり   |
+| 0e7ec4e5-ca22-421a-920f-5eb93151174f  | 山形県    | なし   |
+| ea3a7aaa-9ec9-46ac-a97c-7628063a335a  | 和歌山県  | なし   |
+| 30a7d705-87d0-445a-ae6c-600205590d10  | 山口県    | なし   |
+| c3ef4cbf-0b35-4dda-afcb-272c77f56d03  | 静岡県    | なし   |
+
+**注釈:** 「延滞実績あり」とは、過去に支払い期日を過ぎた取引が1件以上あった場合を指します。
+```
+マークダウンの見た目<br>
+![](image/result.png "")
+なお、ここまで、成功も失敗もしっかりログが取れている。<br>
+![](image/log.png "")
+詳細も見れる、エラーの場合はMetadataのところに詳細が出力されていたりもする。<br>
+![](image/log_detail.png "")
+コストも下記のように確認できる。
+![](image/cost.png "")
 

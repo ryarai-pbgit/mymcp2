@@ -533,7 +533,7 @@ curl --location 'http://127.0.0.1:4000/v1/responses' \
   "tool_choice": "required"
 }'
 ```
-結果
+結果、これをoutput.mdとして保存しています。
 ```
 以下は、取引件数が上位10位の顧客のID、居住地、延滞実績の有無です。
 
@@ -561,3 +561,30 @@ curl --location 'http://127.0.0.1:4000/v1/responses' \
 コストも下記のように確認できる。
 ![](image/cost.png "")
 
+## 4. パワポ生成
+参考）https://github.com/GongRzhe/Office-PowerPoint-MCP-Server/tree/main<br>
+mcpサーバーは、下記のように起動しました。
+
+```
+python ppt_mcp_server.py --transport http --port 8000
+```
+
+Claudeが無料枠限界に達したので、VSCodeでMCPサーバを登録して、Github CopilotをAgentモードで起動して利用することにしました。mcp.jsonは下記の通り。
+```
+{
+	"servers": {
+		"my-mcp-server-7f393d93": {
+			"url": "https://api.githubcopilot.com/mcp/",
+			"type": "http"
+		},
+		"my-mcp-server-ec39cd07": {
+			"url": "http://127.0.01:8000/mcp",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}
+```
+上記のoutput.mdをcopilotに与え、あとはプロンプトの調整ですが、色々やって下記のようなパワポができました。
+
+![](image/output_slide.pptx "")

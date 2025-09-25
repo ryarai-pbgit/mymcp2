@@ -453,4 +453,9 @@ ALTER ACCOUNT SET CORTEX_ENABLED_CROSS_REGION = 'AWS_US';
 思考プロセスの中で、セマンティックモデル（=mytool）を使ってくれているのがわかります。
 ![](image/agentchat1.png "")
 ![](image/agentchat2.png "")
-
+もっと雑に振ってみます。
+![](image/agentchat3.png "")
+![](image/agentchat4.png "")
+![](image/agentchat5.png "")
+![](image/agentchat6.png "")
+![](image/agentchat7.png "")

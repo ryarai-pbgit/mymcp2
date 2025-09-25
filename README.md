@@ -459,3 +459,7 @@ ALTER ACCOUNT SET CORTEX_ENABLED_CROSS_REGION = 'AWS_US';
 ![](image/agentchat5.png "")
 ![](image/agentchat6.png "")
 ![](image/agentchat7.png "")
+真実には辿り着いていないので、それとなく誘い。
+![](image/agentchat8.png "")
+![](image/agentchat9.png "")
+![](image/agentchat10.png "")
